@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.inventario.inv.modelo.Producto;
 import com.inventario.inv.servicio.ProductoService;
 import com.inventario.inv.servicio.ReglaNegocioException;
-import com.inventario.inv.servicio.StorageService;
+import com.inventario.inv.servicio.AlmacenamientoService;
 
 import jakarta.validation.Valid;
 
@@ -25,9 +25,9 @@ import jakarta.validation.Valid;
 public class ProductoController {
 
     private final ProductoService servicio;
-    private final StorageService almacen;
+    private final AlmacenamientoService almacen;
 
-    public ProductoController(ProductoService servicio, StorageService almacen) {
+    public ProductoController(ProductoService servicio, AlmacenamientoService almacen) {
         this.servicio = servicio;
         this.almacen = almacen;
     }
@@ -48,7 +48,7 @@ public class ProductoController {
         return "productos/ficha";
     }
 
-    // ── paso 16: alta y edición (con portada del paso 17) ────────────────
+    // ── paso 16: alta y edición · paso 17: portada solo al crear ─────────
     @GetMapping("/nueva")
     public String formularioNuevo(Model modelo) {
         modelo.addAttribute("producto", new Producto());
@@ -96,7 +96,6 @@ public class ProductoController {
     public String editar(@PathVariable Long id,
                          @Valid @ModelAttribute("producto") Producto producto,
                          BindingResult errores,
-                         @RequestParam(required = false) MultipartFile archivoPortada,
                          RedirectAttributes flash) {
 
         // El formulario no envía el id; si se pierde, al volver con errores
@@ -107,17 +106,7 @@ public class ProductoController {
             return "productos/formulario";
         }
         try {
-            almacen.comprobar(archivoPortada);
-        } catch (ReglaNegocioException e) {
-            errores.rejectValue("portada", "tipo", e.getMessage());
-            return "productos/formulario";
-        }
-        try {
-            Producto editado = servicio.editar(id, producto);
-            String nombre = almacen.guardarPortada(id, archivoPortada);
-            if (nombre != null) {
-                editado.setPortada(nombre);
-            }
+            servicio.editar(id, producto);
         } catch (ReglaNegocioException e) {
             errores.rejectValue("codigo", "duplicado", e.getMessage());
             return "productos/formulario";

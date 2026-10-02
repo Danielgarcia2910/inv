@@ -22,14 +22,23 @@ public class AlmacenamientoService {
         Files.createDirectories(this.carpeta);
     }
 
-    /** Guarda la portada y devuelve el nombre del archivo. */
+    /** Lanza ReglaNegocioException si hay archivo y no es una imagen admitida. */
+    public void comprobar(MultipartFile archivo) {
+        if (archivo == null || archivo.isEmpty()) {
+            return;
+        }
+        String tipo = archivo.getContentType();
+        if (tipo == null || !TIPOS.contains(tipo)) {
+            throw new ReglaNegocioException("La portada debe ser JPG, PNG o WEBP");
+        }
+    }
+
+    /** Guarda la portada y devuelve el nombre del archivo (null si no se subió ninguna). */
     public String guardarPortada(Long idProducto, MultipartFile archivo) {
         if (archivo == null || archivo.isEmpty()) {
             return null;
         }
-        if (!TIPOS.contains(archivo.getContentType())) {
-            throw new ReglaNegocioException("La portada debe ser JPG, PNG o WEBP");
-        }
+        comprobar(archivo);
 
         // El nombre lo pone el servidor, NUNCA el navegador.
         String nombre = "producto-" + idProducto + extension(archivo.getContentType());
