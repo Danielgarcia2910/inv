@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo · Inventario</title>
+</head>
+<body>
+    <h1>Catálogo</h1>
+
+    <form method="get" th:action="@{/productos}">
+        <input type="text" name="buscar" th:value="${buscar}" placeholder="Buscar…">
+        <button type="submit">Buscar</button>
+    </form>
+
+    <p th:if="${#lists.isEmpty(productos)}">No hay productos que coincidan.</p>
+
+    <ul>
+        <li th:each="producto : ${productos}" th:text="${producto}">Producto de ejemplo</li>
+    </ul>
+</body>
+</html>

@@ -1,9 +1,11 @@
 package com.inventario.inv.controlador;
 
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
+
 @RestController
 public class InventarioDmoController {
 
@@ -14,10 +16,9 @@ public class InventarioDmoController {
         return PRODUCTOS;
     }
 
-    @GetMapping("/api/demo/productos/{id}")
-    public String productoPorId(@PathVariable int id) {
-        return PRODUCTOS.get(id);
-        
+    @GetMapping("/api/demo/productos/{indice}")
+    public String producto(@PathVariable int indice) {
+        return PRODUCTOS.get(indice);
     }
 
 }
